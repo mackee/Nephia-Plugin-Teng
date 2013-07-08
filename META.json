@@ -1,10 +1,10 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Simple ORMapper Plugin For Nephia",
    "author" : [
       "mackee <macopy123[attttt]gmai.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v0.5.3, CPAN::Meta::Converter version 2.130880",
+   "generated_by" : "Minilla/v0.5.3, CPAN::Meta::Converter version 2.131560",
    "license" : [
       "perl_5"
    ],
@@ -42,15 +42,33 @@
       },
       "runtime" : {
          "requires" : {
+            "Nephia" : "0.29",
+            "Nephia::DSLModifier" : "0",
+            "Teng" : "0.18",
             "perl" : "5.008005"
          }
       },
       "test" : {
          "requires" : {
+            "File::Spec" : "0",
+            "File::Temp" : "0",
+            "HTTP::Request::Common" : "0",
+            "JSON" : "0",
             "Test::More" : "0.98"
          }
       }
    },
    "release_status" : "unstable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/mackee/Nephia-Plugin-Teng/issues"
+      },
+      "homepage" : "https://github.com/mackee/Nephia-Plugin-Teng",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/mackee/Nephia-Plugin-Teng.git",
+         "web" : "https://github.com/mackee/Nephia-Plugin-Teng"
+      }
+   },
    "version" : "0.01"
 }

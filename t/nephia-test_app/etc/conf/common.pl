@@ -1,9 +1,7 @@
 ### common config
 +{
-    appname => 'MyApp',
     'Plugin::Teng' => {
-        dsn => 'DBI:SQLite:dbname=data.db',
-        connect_level => 2,
+        connect_info => [ 'DBI:SQLite:dbname=data.db' ],
         plugins => [qw/Lookup/],
     }
 };

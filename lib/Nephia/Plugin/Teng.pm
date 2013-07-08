@@ -6,33 +6,26 @@ use Nephia::DSLModifier;
 use Teng::Schema::Loader;
 use DBI;
 
-use constant {
-    # connect level
-    PER_REQUEST => 1,
-    PER_WORKER  => 2,
-    PER_CALL    => 3,
-};
-
 our $VERSION = "0.01";
 our $TENG;
+our @RUN_SQL;
+
+sub database_do ($) {
+    my $sql = shift;
+    push @RUN_SQL, $sql;
+}
+
+sub _on_connect_do {
+    my $dbh = _create_dbh();
+    for my $sql (@RUN_SQL) {
+        $dbh->do($sql);
+    }
+}
 
 sub teng(@) {
     my $caller = caller;
-    my $config = origin('config')->()->{'Plugin::Teng'};
 
-    if (exists $config->{connect_level} && $config->{connect_level} == PER_WORKER) {
-        return _worker_teng($caller);
-    }
-
-    my $ctx = origin('context')->();
-
-    if (!$ctx->{_TENG} || (exists $config->{connect_level} && $config->{connect_level} == PER_CALL)) {
-        $ctx->{_TENG} = _create_teng($caller);
-    }
-
-    origin('context')->($ctx);
-
-    return $ctx->{_TENG};
+    return _worker_teng($caller);
 }
 
 sub _worker_teng {
@@ -44,9 +37,12 @@ sub _create_teng {
     my $caller = shift;
     my $config = origin('config')->()->{'Plugin::Teng'};
     my $pkg = $caller.'::DB';
+
+    _on_connect_do();
+
     my $teng =
         Teng::Schema::Loader->load(
-            dbh => DBI->connect($config->{dsn}, $config->{user}, $config->{password}, $config->{attr}),
+            dbh => _create_dbh(),
             namespace => $pkg
         );
 
@@ -57,6 +53,13 @@ sub _create_teng {
     return $teng;
 };
 
+sub _create_dbh {
+    my $config = origin('config')->()->{'Plugin::Teng'};
+    return DBI->connect(
+        @{$config->{connect_info}}
+    );
+}
+
 1;
 __END__
 
@@ -64,19 +67,66 @@ __END__
 
 =head1 NAME
 
-Nephia::Plugin::Teng - It's new $module
+Nephia::Plugin::Teng - Simple ORMapper Plugin For Nephia
 
 =head1 SYNOPSIS
 
-    use Nephia::Plugin::Teng;
+    use Nephia plugins => [qw/Teng/];
+
+    path '/person/:id' => sub {
+        my $id = path_param('id');
+        my $row = teng->lookup('person', { id => $id });
+        return res { 404 } unless $row;
+
+        return {
+            id => $id,
+            name => $row->get_column('name'),
+            age => $row->get_column('age'),
+        };
+    };
+
+Read row from person table in database in this code.
 
 =head1 DESCRIPTION
 
-Nephia::Plugin::Teng is ...
+=head2 configuration - configuration for Teng.
+
+configuration file:
+
+    'Plugin::Teng' => {
+        connect_info => ['dbi:SQLite:dbname=data.db'],
+        plugins => [qw/Lookup Pager/]
+    },
+
+The "connect_info" is connect information for L<DBI>.
+
+Enumerate in "plugins" option if you want load Teng plugins.
+
+=head2 teng - Create Teng Object
+
+"teng" DSL create the Teng Object.
+
+=head2 database_do - load SQL before plackup.
+
+In this example to create table before plackup.
+
+in controller :
+
+    database_do "CREATE DATABASE IF EXISTS person (id INTEGER, name TEXT, age INTEGE)";
+
+    path '/' => sub {
+        ...
+    };
+
+=head1 SEE ALSO
+
+L<Nephia>
+
+L<Teng>
 
 =head1 LICENSE
 
-Copyright (C) mackee.
+Copyright (C) macopy.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

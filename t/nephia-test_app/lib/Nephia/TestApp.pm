@@ -4,14 +4,20 @@ use warnings;
 use Nephia plugins => [qw/Teng/];
 use utf8;
 
-path '/' => sub {
-    return {
-        template => 'index.html',
-        title    => config->{appname},
-        envname  => config->{envname},
-        apppath  => 'lib/' . __PACKAGE__ .'.pm',
-    };
-};
+database_do <<'SQL';
+CREATE TABLE IF NOT EXISTS `person` (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    age INTEGER
+);
+SQL
+
+database_do <<'SQL';
+INSERT INTO "person"
+    ("id", "name", "age")
+    VALUES (1, "bob", "20");
+SQL
+
 
 get '/person/:id' => sub {
     my $id = path_param('id');
