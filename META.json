@@ -72,5 +72,8 @@
          "web" : "https://github.com/mackee/Nephia-Plugin-Teng"
       }
    },
-   "version" : "0.01"
+   "version" : "0.01",
+   "x_contributors" : [
+      "mackee <macopy123@gmail.com>"
+   ]
 }
