@@ -42,6 +42,7 @@
       },
       "runtime" : {
          "requires" : {
+            "DBI" : "0",
             "Nephia" : "0.29",
             "Nephia::DSLModifier" : "0",
             "Teng" : "0.18",
@@ -50,6 +51,7 @@
       },
       "test" : {
          "requires" : {
+            "DBD::SQLite" : "0",
             "File::Spec" : "0",
             "File::Temp" : "0",
             "HTTP::Request::Common" : "0",
