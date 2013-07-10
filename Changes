@@ -2,6 +2,10 @@ Revision history for Perl extension Nephia-Plugin-Teng
 
 {{$NEXT}}
 
+0.02 2013-07-10T11:17:01Z
+
+    - fix example code in POD
+
 0.01 2013-07-08T15:06:14Z
 
     - original version

@@ -6,7 +6,7 @@ use Nephia::DSLModifier;
 use Teng::Schema::Loader;
 use DBI;
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 our $TENG;
 our @RUN_SQL;
 
