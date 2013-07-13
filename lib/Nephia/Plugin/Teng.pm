@@ -2,13 +2,19 @@ package Nephia::Plugin::Teng;
 use 5.008005;
 use strict;
 use warnings;
-use Nephia::DSLModifier;
 use Teng::Schema::Loader;
 use DBI;
 
 our $VERSION = "0.02";
+our @EXPORT = qw/database_do teng/;
 our $TENG;
 our @RUN_SQL;
+our $APP_CLASS;
+
+sub load {
+    my ($class, $app) = @_;
+    $APP_CLASS = $app;
+}
 
 sub database_do ($) {
     my $sql = shift;
@@ -33,9 +39,13 @@ sub _worker_teng {
     $TENG ||= _create_teng($caller);
 }
 
+sub _teng_config () {
+    $APP_CLASS->can('config');
+}
+
 sub _create_teng {
     my $caller = shift;
-    my $config = origin('config')->()->{'Plugin::Teng'};
+    my $config = _teng_config->()->{'Plugin::Teng'};
     my $pkg = $caller.'::DB';
 
     _on_connect_do();
@@ -54,7 +64,7 @@ sub _create_teng {
 };
 
 sub _create_dbh {
-    my $config = origin('config')->()->{'Plugin::Teng'};
+    my $config = _teng_config->()->{'Plugin::Teng'};
     return DBI->connect(
         @{$config->{connect_info}}
     );

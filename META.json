@@ -43,8 +43,7 @@
       "runtime" : {
          "requires" : {
             "DBI" : "0",
-            "Nephia" : "0.29",
-            "Nephia::DSLModifier" : "0",
+            "Nephia" : "0.31",
             "Teng" : "0.18",
             "perl" : "5.008005"
          }
