@@ -5,7 +5,7 @@ use warnings;
 use Teng::Schema::Loader;
 use DBI;
 
-our $VERSION = "0.02";
+our $VERSION = "0.03";
 our @EXPORT = qw/database_do teng/;
 our $TENG;
 our @RUN_SQL;
