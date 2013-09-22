@@ -7,8 +7,6 @@ use DBI;
 use parent 'Nephia::Plugin';
 
 our $VERSION = "0.03";
-our @RUN_SQL;
-our $APP_CLASS;
 
 sub new {
     my ($class, %opts) = @_;
@@ -45,11 +43,6 @@ sub teng {
     return sub (@) {
         $self->{teng} ||= $self->_create_teng();
     };
-}
-
-sub _teng_config () {
-    my $self = shift;
-    $APP_CLASS->can('config');
 }
 
 sub _create_teng {
