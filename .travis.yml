@@ -4,3 +4,5 @@ perl:
   - 5.14
   - 5.16
 
+install:
+  - cpanm --mirror=http://cpan.mirrors.travis-ci.org/ --mirror=https://github.com/nephia/nephia-pan/raw/master/ --mirror-only --installdeps --notest .
