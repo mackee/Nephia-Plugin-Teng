@@ -1,10 +1,11 @@
 use strict;
 use warnings;
-use FindBin;
-use Config::Micro;
 use File::Spec;
-
-use lib ("$FindBin::Bin/lib", "$FindBin::Bin/extlib/lib/perl5");
+use File::Basename 'dirname';
+use Config::Micro;
+use lib (
+    File::Spec->catdir(dirname(__FILE__), 'lib'), 
+);
 use Nephia::TestApp;
 my $config = require( Config::Micro->file( dir => File::Spec->catdir('etc','conf') ) );
-Nephia::TestApp->run( $config );
+Nephia::TestApp->run( %$config );

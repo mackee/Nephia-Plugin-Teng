@@ -4,59 +4,68 @@ use strict;
 use warnings;
 use Teng::Schema::Loader;
 use DBI;
+use parent 'Nephia::Plugin';
 
 our $VERSION = "0.03";
-our @EXPORT = qw/database_do teng/;
-our $TENG;
 our @RUN_SQL;
 our $APP_CLASS;
 
-sub load {
-    my ($class, $app) = @_;
-    $APP_CLASS = $app;
+sub new {
+    my ($class, %opts) = @_;
+    my $self = $class->SUPER::new(%opts);
+    $self->{RUN_SQL} = [];
+    return $self;
 }
 
-sub database_do ($) {
-    my $sql = shift;
-    push @RUN_SQL, $sql;
+sub exports { qw/database_do teng/ }
+
+sub database_do {
+    my $self = shift;
+    my $context = shift;
+    $self->_load_context_config($context);
+    return sub ($) {
+        my $sql = shift;
+        push @{$self->{RUN_SQL}}, $sql;
+    };
 }
 
 sub _on_connect_do {
-    my $dbh = _create_dbh();
+    my $self = shift;
+    my $dbh = $self->_create_dbh();
+    my @RUN_SQL = @{$self->{RUN_SQL}};
     for my $sql (@RUN_SQL) {
         $dbh->do($sql);
     }
 }
 
-sub teng(@) {
-    my $caller = caller;
-
-    return _worker_teng($caller);
-}
-
-sub _worker_teng {
-    my $caller = shift;
-    $TENG ||= _create_teng($caller);
+sub teng {
+    my $self = shift;
+    my $context = shift;
+    $self->_load_context_config($context);
+    return sub (@) {
+        $self->{teng} ||= $self->_create_teng();
+    };
 }
 
 sub _teng_config () {
+    my $self = shift;
     $APP_CLASS->can('config');
 }
 
 sub _create_teng {
-    my $caller = shift;
-    my $config = _teng_config->()->{'Plugin::Teng'};
-    my $pkg = $caller.'::DB';
+    my $self = shift;
+    my $config = $self->{opts};
+    my $pkg = $config->{teng_namespace} // $self->app->{caller}.'::DB';
 
-    _on_connect_do();
+    $self->_on_connect_do();
 
     my $teng =
         Teng::Schema::Loader->load(
-            dbh => _create_dbh(),
+            dbh => $self->_create_dbh(),
             namespace => $pkg
         );
 
-    for my $plugin (@{$config->{plugins}}) {
+    for my $plugin (@{$config->{teng_plugins}}) {
         $pkg->load_plugin($plugin);
     }
 
@@ -64,10 +73,24 @@ sub _create_teng {
 };
 
 sub _create_dbh {
-    my $config = _teng_config->()->{'Plugin::Teng'};
-    return DBI->connect(
-        @{$config->{connect_info}}
-    );
+    my $self = shift;
+    my @connect_info;
+
+    @connect_info = @{$self->{opts}->{connect_info}}
+        if exists $self->{opts}->{connect_info}
+            && ref $self->{opts}->{connect_info} eq "ARRAY";
+    @connect_info = @{$self->{config}->{DBI}->{connect_info}}
+        if !@connect_info
+            && exists $self->{config}->{DBI}->{connect_info}
+            && ref $self->{config}->{DBI}->{connect_info} eq "ARRAY";
+
+    return DBI->connect(@connect_info);
+}
+
+sub _load_context_config {
+    my $self = shift;
+    my $context = shift;
+    $self->{config} = $context->get('config');
 }
 
 1;
@@ -103,9 +126,9 @@ Read row from person table in database in this code.
 
 configuration file:
 
-    'Plugin::Teng' => {
+    'DBI' => {
         connect_info => ['dbi:SQLite:dbname=data.db'],
-        plugins => [qw/Lookup Pager/]
+        teng_plugins => [qw/Lookup Pager/]
     },
 
 The "connect_info" is connect information for L<DBI>.
