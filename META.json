@@ -4,7 +4,7 @@
       "mackee <macopy123[attttt]gmai.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Minilla/v0.5.3, CPAN::Meta::Converter version 2.131560",
+   "generated_by" : "Minilla/v0.7.0, CPAN::Meta::Converter version 2.131560",
    "license" : [
       "perl_5"
    ],
@@ -42,8 +42,7 @@
       },
       "runtime" : {
          "requires" : {
-            "DBI" : "0",
-            "Nephia" : "0.31",
+            "Nephia" : "0.80",
             "Teng" : "0.18",
             "perl" : "5.008005"
          }
@@ -55,6 +54,8 @@
             "File::Temp" : "0",
             "HTTP::Request::Common" : "0",
             "JSON" : "0",
+            "Nephia::Plugin::Dispatch" : "0",
+            "Nephia::Plugin::JSON" : "0",
             "Test::More" : "0.98"
          }
       }

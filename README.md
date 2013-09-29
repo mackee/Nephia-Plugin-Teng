@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/mackee/Nephia-Plugin-Teng.png?branch=master)](https://travis-ci.org/mackee/Nephia-Plugin-Teng)
 # NAME
 
 Nephia::Plugin::Teng - Simple ORMapper Plugin For Nephia
@@ -26,9 +27,9 @@ Read row from person table in database in this code.
 
 configuration file:
 
-    'Plugin::Teng' => {
+    'DBI' => {
         connect_info => ['dbi:SQLite:dbname=data.db'],
-        plugins => [qw/Lookup Pager/]
+        teng_plugins => [qw/Lookup Pager/]
     },
 
 The "connect\_info" is connect information for [DBI](http://search.cpan.org/perldoc?DBI).
