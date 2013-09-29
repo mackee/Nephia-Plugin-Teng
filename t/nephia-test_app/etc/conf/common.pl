@@ -1,7 +1,6 @@
 ### common config
 +{
-    'Plugin::Teng' => {
+    'DBI' => {
         connect_info => [ 'DBI:SQLite:dbname=data.db' ],
-        plugins => [qw/Lookup/],
     }
 };

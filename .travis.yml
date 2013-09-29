@@ -4,3 +4,7 @@ perl:
   - 5.14
   - 5.16
 
+install:
+  - cpanm https://github.com/nephia/Nephia/archive/master.tar.gz
+  - cpanm https://github.com/nephia/Nephia-Plugin-JSON/archive/master.tar.gz
+  - cpanm --mirror=https://github.com/nephia/nephia-pan/raw/master/ --mirror=http://cpan.metacpan.org/ --installdeps --notest .

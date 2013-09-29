@@ -15,9 +15,8 @@ my ($fh, $tempfile) = tempfile();
 undef $fh;
 use Nephia::TestApp;
 my $app = Nephia::TestApp->run(
-    'Plugin::Teng' => {
+    'DBI' => {
         connect_info => [ 'DBI:SQLite:dbname='.$tempfile ],
-        plugins => [qw/Lookup/],
     }
 );
 
